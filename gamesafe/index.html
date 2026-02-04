@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>游戏健康忠告生成器 | WisePlus</title>
+    <!-- 引入 Google Fonts 中文字体 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700&family=Noto+Serif+SC:wght@400;700&family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --text-light: #f1f5f9;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .back-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link:hover {
+            color: var(--text-light);
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .controls {
+            width: 360px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .preview-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #000;
+            background-image: 
+                linear-gradient(45deg, #111 25%, transparent 25%), 
+                linear-gradient(-45deg, #111 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #111 75%), 
+                linear-gradient(-45deg, transparent 75%, #111 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            padding: 2rem;
+            overflow: auto;
+        }
+
+        canvas {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+
+        select, input[type="text"], input[type="color"] {
+            background: #334155;
+            border: 1px solid #475569;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        select:focus, input:focus {
+            outline: 2px solid var(--primary);
+            border-color: transparent;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-option {
+            flex: 1;
+            padding: 0.5rem;
+            background: #334155;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .btn-option.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: auto;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+        
+        .toggle-input {
+            display: none;
+        }
+
+        .toggle-track {
+            width: 40px;
+            height: 20px;
+            background: #475569;
+            border-radius: 20px;
+            position: relative;
+            transition: background 0.3s;
+        }
+
+        .toggle-thumb {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s;
+        }
+
+        .toggle-input:checked + .toggle-track {
+            background: var(--primary);
+        }
+
+        .toggle-input:checked + .toggle-track .toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                overflow: auto;
+            }
+            main {
+                flex-direction: column;
+                overflow: visible;
+            }
+            .controls {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                max-height: 50vh;
+            }
+            .preview-area {
+                min-height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="../index.html" class="back-link">
+            <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            返回工具箱
+        </a>
+        <h1>游戏健康忠告生成器</h1>
+        <div style="width: 80px"></div> <!-- Spacer -->
+    </header>
+
+    <main>
+        <div class="controls">
+            <!-- Canvas Size -->
+            <div class="control-group">
+                <label>画布尺寸</label>
+                <select id="sizePreset">
+                    <optgroup label="手机竖屏 (Portrait)">
+                        <option value="1080x1920">1080 x 1920 (FHD)</option>
+                        <option value="1242x2688">1242 x 2688 (iPhone XS Max)</option>
+                        <option value="750x1334">750 x 1334 (iPhone 8)</option>
+                    </optgroup>
+                    <optgroup label="手机横屏 (Landscape)">
+                        <option value="1920x1080" selected>1920 x 1080 (FHD)</option>
+                        <option value="2688x1242">2688 x 1242 (iPhone XS Max)</option>
+                        <option value="1334x750">1334 x 750 (iPhone 8)</option>
+                    </optgroup>
+                    <optgroup label="PC / 平板">
+                        <option value="2560x1440">2560 x 1440 (2K)</option>
+                        <option value="1280x720">1280 x 720 (HD)</option>
+                    </optgroup>
+                    <option value="custom">自定义尺寸...</option>
+                </select>
+                <div id="customSizeInputs" style="display: none; gap: 0.5rem; margin-top: 0.5rem;">
+                    <input type="number" id="customW" placeholder="宽" value="1920">
+                    <input type="number" id="customH" placeholder="高" value="1080">
+                </div>
+            </div>
+
+            <!-- Background -->
+            <div class="control-group">
+                <label>背景样式</label>
+                <select id="bgStyle">
+                    <optgroup label="纯色">
+                        <option value="black">纯黑 (Classic Black)</option>
+                        <option value="white">纯白 (Classic White)</option>
+                        <option value="orange">活力橙 (Vibrant Orange)</option>
+                        <option value="purple">神秘紫 (Mystic Purple)</option>
+                        <option value="darkgrey">深灰 (Dark Grey)</option>
+                        <option value="color">自定义纯色...</option>
+                    </optgroup>
+                    <optgroup label="渐变色">
+                        <option value="grad-midnight">渐变 - 午夜 (Midnight Blue)</option>
+                        <option value="grad-ocean">渐变 - 深海 (Deep Ocean)</option>
+                        <option value="grad-sunset">渐变 - 落日 (Sunset Orange)</option>
+                        <option value="grad-forest">渐变 - 森林 (Emerald Forest)</option>
+                        <option value="grad-cyber">渐变 - 赛博 (Cyber Punk)</option>
+                        <option value="grad-morning">渐变 - 清晨 (Morning Mist)</option>
+                        <option value="grad-aurora">渐变 - 极光 (Aurora)</option>
+                    </optgroup>
+                </select>
+                <div id="bgColorPickerContainer" style="display: none; margin-top: 0.5rem;">
+                    <input type="color" id="bgColorPicker" value="#000000">
+                </div>
+            </div>
+
+            <!-- Text Content -->
+            <div class="control-group">
+                <label>文字颜色</label>
+                <input type="color" id="textColor" value="#ffffff">
+            </div>
+
+            <div class="control-group">
+                <label>字体</label>
+                <select id="fontFamily">
+                    <optgroup label="系统基础字体">
+                        <option value="'Microsoft YaHei', 'Heiti SC', sans-serif">黑体 (标准硬朗)</option>
+                        <option value="'Songti SC', 'SimSun', 'Noto Serif SC', serif">宋体 (传统印刷)</option>
+                        <!-- 修复楷体：添加更多兼容名称 -->
+                        <option value="'Kaiti SC', 'STKaiti', 'KaiTi', 'KaiTi_GB2312', '楷体', serif">楷体 (传统书法)</option>
+                    </optgroup>
+                    <optgroup label="在线柔软字体 (需联网)">
+                        <option value="'ZCOOL XiaoWei', serif">站酷小薇体 (柔软手写)</option>
+                        <option value="'Ma Shan Zheng', cursive">马善政毛笔 (豪放书法)</option>
+                        <option value="'ZCOOL KuaiLe', cursive">站酷快乐体 (圆润可爱)</option>
+                        <option value="'Long Cang', cursive">龙苍行书 (飘逸草书)</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <!-- Position Controls -->
+            <div class="control-group">
+                <label>忠告内容位置</label>
+                <div class="btn-group" id="posGroupV" style="display: none;">
+                    <button class="btn-option" data-pos="top">上</button>
+                    <button class="btn-option active" data-pos="center">中</button>
+                    <button class="btn-option" data-pos="bottom">下</button>
+                </div>
+                <div class="btn-group" id="posGroupH">
+                    <button class="btn-option" data-pos="left">左</button>
+                    <button class="btn-option active" data-pos="center">中</button>
+                    <button class="btn-option" data-pos="right">右</button>
+                </div>
+            </div>
+
+            <!-- Title Settings -->
+            <div class="control-group">
+                <label class="toggle-switch">
+                    <span>显示游戏标题</span>
+                    <input type="checkbox" id="showTitle" class="toggle-input">
+                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                </label>
+            </div>
+
+            <div id="titleSettings" style="display: none; flex-direction: column; gap: 1rem;">
+                <div class="control-group">
+                    <input type="text" id="gameTitle" value="游戏标题" placeholder="输入游戏名称">
+                </div>
+                
+                <div class="control-group">
+                    <label>标题位置</label>
+                    <div class="btn-group" id="titlePosGroupV" style="display: none;">
+                        <button class="btn-option active" data-pos="top">上</button>
+                        <button class="btn-option" data-pos="center">中</button>
+                        <button class="btn-option" data-pos="bottom">下</button>
+                    </div>
+                    <div class="btn-group" id="titlePosGroupH">
+                        <button class="btn-option" data-pos="left">左</button>
+                        <button class="btn-option active" data-pos="center">中</button>
+                        <button class="btn-option" data-pos="right">右</button>
+                    </div>
+                </div>
+            </div>
+
+            <button id="downloadBtn" class="btn-primary">下载图片 (PNG)</button>
+        </div>
+
+        <div class="preview-area">
+            <canvas id="canvas"></canvas>
+        </div>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // State
+        const state = {
+            width: 1920,
+            height: 1080,
+            bgStyle: 'black', // black, white, color, grad-*
+            customBgColor: '#000000',
+            textColor: '#ffffff',
+            fontFamily: "'Microsoft YaHei', 'Heiti SC', sans-serif",
+            warningPos: 'center', // top/center/bottom or left/center/right
+            showTitle: false,
+            gameTitle: '游戏标题',
+            titlePos: 'center'
+        };
+
+        const WARNING_TEXT = [
+            "健康游戏忠告",
+            "抵制不良游戏，拒绝盗版游戏。",
+            "注意自我保护，谨防受骗上当。",
+            "适度游戏益脑，沉迷游戏伤身。",
+            "合理安排时间，享受健康生活。"
+        ];
+
+        // Elements
+        const sizePreset = document.getElementById('sizePreset');
+        const customSizeInputs = document.getElementById('customSizeInputs');
+        const customW = document.getElementById('customW');
+        const customH = document.getElementById('customH');
+        const bgStyle = document.getElementById('bgStyle');
+        const bgColorPickerContainer = document.getElementById('bgColorPickerContainer');
+        const bgColorPicker = document.getElementById('bgColorPicker');
+        const textColor = document.getElementById('textColor');
+        const fontFamily = document.getElementById('fontFamily');
+        const posGroupV = document.getElementById('posGroupV');
+        const posGroupH = document.getElementById('posGroupH');
+        const showTitle = document.getElementById('showTitle');
+        const titleSettings = document.getElementById('titleSettings');
+        const gameTitle = document.getElementById('gameTitle');
+        const titlePosGroupV = document.getElementById('titlePosGroupV');
+        const titlePosGroupH = document.getElementById('titlePosGroupH');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        // Check if fonts are loaded
+        document.fonts.ready.then(() => {
+            draw(); // Redraw when fonts are ready
+        });
+
+        // Init
+        function init() {
+            updateOrientationUI();
+            draw();
+            setupEventListeners();
+        }
+
+        function setupEventListeners() {
+            sizePreset.addEventListener('change', (e) => {
+                if (e.target.value === 'custom') {
+                    customSizeInputs.style.display = 'flex';
+                } else {
+                    customSizeInputs.style.display = 'none';
+                    const [w, h] = e.target.value.split('x').map(Number);
+                    state.width = w;
+                    state.height = h;
+                    updateOrientationUI();
+                    draw();
+                }
+            });
+
+            [customW, customH].forEach(input => {
+                input.addEventListener('change', () => {
+                    state.width = parseInt(customW.value) || 1920;
+                    state.height = parseInt(customH.value) || 1080;
+                    updateOrientationUI();
+                    draw();
+                });
+            });
+
+            bgStyle.addEventListener('change', (e) => {
+                state.bgStyle = e.target.value;
+                bgColorPickerContainer.style.display = e.target.value === 'color' ? 'block' : 'none';
+                draw();
+            });
+
+            bgColorPicker.addEventListener('input', (e) => {
+                state.customBgColor = e.target.value;
+                draw();
+            });
+
+            textColor.addEventListener('input', (e) => {
+                state.textColor = e.target.value;
+                draw();
+            });
+
+            fontFamily.addEventListener('change', (e) => {
+                state.fontFamily = e.target.value;
+                // Wait a bit for font switch visually or just redraw
+                setTimeout(draw, 50);
+                draw();
+            });
+
+            // Warning Position Buttons
+            [posGroupV, posGroupH].forEach(group => {
+                group.querySelectorAll('.btn-option').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        group.querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        state.warningPos = btn.dataset.pos;
+                        draw();
+                    });
+                });
+            });
+
+            // Title Toggle
+            showTitle.addEventListener('change', (e) => {
+                state.showTitle = e.target.checked;
+                titleSettings.style.display = e.target.checked ? 'flex' : 'none';
+                draw();
+            });
+
+            gameTitle.addEventListener('input', (e) => {
+                state.gameTitle = e.target.value;
+                draw();
+            });
+
+            // Title Position Buttons
+            [titlePosGroupV, titlePosGroupH].forEach(group => {
+                group.querySelectorAll('.btn-option').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        group.querySelectorAll('.btn-option').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        state.titlePos = btn.dataset.pos;
+                        draw();
+                    });
+                });
+            });
+
+            downloadBtn.addEventListener('click', downloadImage);
+        }
+
+        function isPortrait() {
+            return state.height > state.width;
+        }
+
+        function updateOrientationUI() {
+            const portrait = isPortrait();
+            
+            // Show correct position controls
+            posGroupV.style.display = portrait ? 'flex' : 'none';
+            posGroupH.style.display = portrait ? 'none' : 'flex';
+            
+            titlePosGroupV.style.display = portrait ? 'flex' : 'none';
+            titlePosGroupH.style.display = portrait ? 'none' : 'flex';
+
+            // Reset selection visually if needed
+            const validV = ['top', 'center', 'bottom'];
+            const validH = ['left', 'center', 'right'];
+            
+            if (portrait && !validV.includes(state.warningPos)) state.warningPos = 'center';
+            if (!portrait && !validH.includes(state.warningPos)) state.warningPos = 'center';
+            
+            if (portrait && !validV.includes(state.titlePos)) state.titlePos = 'center';
+            if (!portrait && !validH.includes(state.titlePos)) state.titlePos = 'center';
+
+            updateBtnActive(posGroupV, state.warningPos);
+            updateBtnActive(posGroupH, state.warningPos);
+            updateBtnActive(titlePosGroupV, state.titlePos);
+            updateBtnActive(titlePosGroupH, state.titlePos);
+        }
+
+        function updateBtnActive(group, val) {
+            group.querySelectorAll('.btn-option').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.pos === val);
+            });
+        }
+
+        function draw() {
+            canvas.width = state.width;
+            canvas.height = state.height;
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // 1. Background
+            drawBackground(w, h);
+
+            // 2. Calculate Layout
+            const portrait = isPortrait();
+            const padding = Math.min(w, h) * 0.05; // 5% padding
+            
+            // Font sizes
+            const baseFontSize = Math.min(w, h) * 0.045; // Responsive font size
+            const titleFontSize = baseFontSize * 1.5;
+            const warningFontSize = baseFontSize;
+            const lineHeight = 1.6;
+
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // -- Measure Warning Block --
+            ctx.font = `${warningFontSize}px ${state.fontFamily}`;
+            const warningLines = WARNING_TEXT;
+            const warningBlockHeight = warningLines.length * warningFontSize * lineHeight;
+            
+            // -- Measure Title Block --
+            let titleBlockHeight = 0;
+            if (state.showTitle) {
+                ctx.font = `bold ${titleFontSize}px ${state.fontFamily}`;
+                titleBlockHeight = titleFontSize * lineHeight;
+            }
+
+            // -- Determine Positions --
+            let warningCenter = { x: w/2, y: h/2 };
+            let titleCenter = { x: w/2, y: h/2 };
+
+            const getPosCoords = (posStr, blockH) => {
+                let x = w/2, y = h/2;
+                if (portrait) {
+                    if (posStr === 'top') y = padding + blockH/2 + (h * 0.1); 
+                    if (posStr === 'bottom') y = h - padding - blockH/2 - (h * 0.1);
+                } else {
+                    if (posStr === 'left') x = w * 0.25;
+                    if (posStr === 'right') x = w * 0.75;
+                }
+                return {x, y};
+            };
+
+            let wPos = getPosCoords(state.warningPos, warningBlockHeight);
+            let tPos = state.showTitle ? getPosCoords(state.titlePos, titleBlockHeight) : {x:0, y:0};
+
+            // Collision / Overlap Logic
+            if (state.showTitle && state.warningPos === state.titlePos) {
+                const totalH = titleBlockHeight + warningBlockHeight + (baseFontSize); 
+                
+                let groupCenterY = h/2;
+                if (portrait) {
+                    if (state.warningPos === 'top') groupCenterY = padding + totalH/2 + (h * 0.1);
+                    if (state.warningPos === 'bottom') groupCenterY = h - padding - totalH/2 - (h * 0.1);
+                }
+                
+                tPos.y = groupCenterY - (totalH/2) + (titleBlockHeight/2);
+                wPos.y = groupCenterY + (totalH/2) - (warningBlockHeight/2);
+                
+                // For landscape shared pos (e.g. both left), keep x same, but adjust Y?
+                // Standard landscape health warning usually centers vertically.
+                // If collision in landscape (e.g. both left), we stack vertically too.
+                tPos.x = wPos.x;
+            }
+
+            // 3. Draw Title
+            if (state.showTitle) {
+                ctx.fillStyle = state.textColor;
+                ctx.font = `bold ${titleFontSize}px ${state.fontFamily}`;
+                ctx.fillText(state.gameTitle, tPos.x, tPos.y);
+            }
+
+            // 4. Draw Warning
+            ctx.fillStyle = state.textColor;
+            ctx.font = `${warningFontSize}px ${state.fontFamily}`;
+            
+            const startY = wPos.y - (warningBlockHeight / 2) + (warningFontSize * lineHeight / 2);
+            warningLines.forEach((line, index) => {
+                ctx.fillText(line, wPos.x, startY + (index * warningFontSize * lineHeight));
+            });
+        }
+
+        function drawBackground(w, h) {
+            // Check for solid colors
+            if (['black', 'white', 'orange', 'purple', 'darkgrey'].includes(state.bgStyle)) {
+                let color = '#000000';
+                switch(state.bgStyle) {
+                    case 'black': color = '#000000'; break;
+                    case 'white': color = '#ffffff'; break;
+                    case 'orange': color = '#f97316'; break;
+                    case 'purple': color = '#8b5cf6'; break;
+                    case 'darkgrey': color = '#333333'; break;
+                }
+                ctx.fillStyle = color;
+                ctx.fillRect(0, 0, w, h);
+                return;
+            }
+
+            // Check for custom color
+            if (state.bgStyle === 'color') {
+                ctx.fillStyle = state.customBgColor;
+                ctx.fillRect(0, 0, w, h);
+                return;
+            }
+
+            // Check for gradients
+            if (state.bgStyle.startsWith('grad-')) {
+                const grd = ctx.createLinearGradient(0, 0, w, h);
+                switch(state.bgStyle) {
+                    case 'grad-midnight':
+                        grd.addColorStop(0, "#0f172a");
+                        grd.addColorStop(1, "#312e81");
+                        break;
+                    case 'grad-ocean':
+                        grd.addColorStop(0, "#0c4a6e");
+                        grd.addColorStop(1, "#06b6d4");
+                        break;
+                    case 'grad-sunset':
+                        grd.addColorStop(0, "#c2410c");
+                        grd.addColorStop(1, "#f59e0b");
+                        break;
+                    case 'grad-forest':
+                        grd.addColorStop(0, "#064e3b");
+                        grd.addColorStop(1, "#10b981");
+                        break;
+                    case 'grad-cyber':
+                        grd.addColorStop(0, "#833ab4");
+                        grd.addColorStop(0.5, "#fd1d1d");
+                        grd.addColorStop(1, "#fcb045");
+                        break;
+                    case 'grad-morning':
+                        grd.addColorStop(0, "#a1c4fd");
+                        grd.addColorStop(1, "#c2e9fb");
+                        break;
+                    case 'grad-aurora':
+                        grd.addColorStop(0, "#134e5e");
+                        grd.addColorStop(1, "#71b280");
+                        break;
+                }
+                ctx.fillStyle = grd;
+                ctx.fillRect(0, 0, w, h);
+            }
+        }
+
+        function downloadImage() {
+            const link = document.createElement('a');
+            link.download = `game-warning-${state.width}x${state.height}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        init();
+    </script>
+</body>
+</html>
