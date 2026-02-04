@@ -284,88 +284,119 @@
         </header>
 
         <div class="grid" id="card-grid">
-            <!-- Seedance Tool -->
-            <a href="#" class="card tilt-card" onclick="alert('Launch Seedance Tool')">
-                <div class="card-content">
-                    <div class="card-icon">🎬</div>
-                    <h2 class="card-title">Seedance Automation</h2>
-                    <p class="card-desc">Batch video generation powered by AI models. Streamline your content creation workflow with intelligent shortcuts.</p>
-                    <div class="card-arrow">
-                        Launch App
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                    </div>
-                </div>
-            </a>
-
-            <!-- AppStore Tool -->
-            <a href="#" class="card tilt-card" onclick="alert('Launch AppStore Resizer')">
-                <div class="card-content">
-                    <div class="card-icon">📐</div>
-                    <h2 class="card-title">AppStore Resizer</h2>
-                    <p class="card-desc">Smart image processing for iOS submissions. Upload once, export all required dimensions instantly.</p>
-                    <div class="card-arrow">
-                        Launch App
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Game Health Warning Tool -->
-            <a href="./gamesafe/index.html" class="card tilt-card">
-                <div class="card-content">
-                    <div class="card-icon">🛡️</div>
-                    <h2 class="card-title">Health Warning Gen</h2>
-                    <p class="card-desc">Generate standard Chinese game health warning screens. Customizable sizes, fonts, and layouts.</p>
-                    <div class="card-arrow">
-                        Launch App
-                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                    </div>
-                </div>
-            </a>
-
-            <!-- Coming Soon -->
-            <div class="card add-new">
-                <div class="card-content">
-                    <div style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;">+</div>
-                    <h3 style="font-size: 1.2rem; font-weight: 500;">More Coming Soon</h3>
-                </div>
-            </div>
+            <!-- Cards will be loaded dynamically from config.json -->
         </div>
     </main>
 
     <script>
+        // Tool Configuration - Edit this list to add/remove tools
+        const TOOLS_CONFIG = [
+            {
+                "id": "seedance",
+                "title": "Seedance Automation",
+                "description": "Batch video generation powered by AI models. Streamline your content creation workflow with intelligent shortcuts.",
+                "icon": "🎬",
+                "link": "#",
+                "onclick": "alert('Launch Seedance Tool')"
+            },
+            {
+                "id": "appstore",
+                "title": "AppStore Resizer",
+                "description": "Smart image processing for iOS submissions. Upload once, export all required dimensions instantly.",
+                "icon": "📐",
+                "link": "#",
+                "onclick": "alert('Launch AppStore Resizer')"
+            },
+            {
+                "id": "gamesafe",
+                "title": "Health Warning Gen",
+                "description": "Generate standard Chinese game health warning screens. Customizable sizes, fonts, and layouts.",
+                "icon": "🛡️",
+                "link": "./gamesafe/index.html",
+                "onclick": ""
+            }
+        ];
+
+        // Load tools from configuration
+        function loadTools() {
+            try {
+                const grid = document.getElementById('card-grid');
+                grid.innerHTML = '';
+
+                TOOLS_CONFIG.forEach(tool => {
+                    const card = document.createElement('a');
+                    card.href = tool.link;
+                    card.className = 'card tilt-card';
+                    if (tool.onclick) {
+                        card.setAttribute('onclick', tool.onclick);
+                    }
+                    
+                    card.innerHTML = `
+                        <div class="card-content">
+                            <div class="card-icon">${tool.icon}</div>
+                            <h2 class="card-title">${tool.title}</h2>
+                            <p class="card-desc">${tool.description}</p>
+                            <div class="card-arrow">
+                                Launch App
+                                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+
+                // Add "Coming Soon" card
+                const comingSoon = document.createElement('div');
+                comingSoon.className = 'card add-new';
+                comingSoon.innerHTML = `
+                    <div class="card-content">
+                        <div style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;">+</div>
+                        <h3 style="font-size: 1.2rem; font-weight: 500;">More Coming Soon</h3>
+                    </div>
+                `;
+                grid.appendChild(comingSoon);
+
+                // Initialize tilt effect after cards are added
+                initTiltEffect();
+
+            } catch (error) {
+                console.error('Error loading tools:', error);
+            }
+        }
+
         // 3D Tilt Effect
-        document.querySelectorAll('.tilt-card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                // Update mouse position for gradient effect
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
+        function initTiltEffect() {
+            document.querySelectorAll('.tilt-card').forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    // Update mouse position for gradient effect
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
 
-                // Calculate tilt rotation
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -5; // Max 5deg rotation
-                const rotateY = ((x - centerX) / centerX) * 5;
+                    // Calculate tilt rotation
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -5; // Max 5deg rotation
+                    const rotateY = ((x - centerX) / centerX) * 5;
 
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                    card.style.removeProperty('--mouse-x');
+                    card.style.removeProperty('--mouse-y');
+                });
             });
+        }
 
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-                card.style.removeProperty('--mouse-x');
-                card.style.removeProperty('--mouse-y');
-            });
-        });
+        // Initialize
+        loadTools();
     </script>
 </body>
 </html>
