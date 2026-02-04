@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WisePlus 工具箱</title>
+    <title>WisePlus Creative Lab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2563eb;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-secondary: #64748b;
-            --transition: all 0.3s ease;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-highlight: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff;
+            --text-secondary: #94a3b8;
+            --accent-1: #3b82f6; /* Blue */
+            --accent-2: #8b5cf6; /* Purple */
+            --accent-3: #ec4899; /* Pink */
         }
 
         * {
@@ -21,204 +27,330 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
+            font-family: 'Space Grotesk', -apple-system, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .ambient-light {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+            background: #0f172a;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+
+        .orb-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-1);
+            top: -100px;
+            left: -100px;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            width: 500px;
+            height: 500px;
+            background: var(--accent-2);
+            bottom: -100px;
+            right: -100px;
+            animation-delay: -5s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: var(--accent-3);
+            top: 40%;
+            left: 40%;
+            animation-delay: -10s;
+            opacity: 0.4;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, 50px) scale(1.1); }
+            100% { transform: translate(-20px, -30px) scale(0.9); }
+        }
+
+        /* Noise Texture Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIj48ZmlsdGVyIGlkPSJnoiPjxmZVR1cmJ1bGVuY2UgdHlwZT0iZnJhY3RhbE5vaXNlIiBiYXNlRnJlcXVlbmN5PSIwLjY1IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI2cpIiBvcGFjaXR5PSIwLjAzIi8+PC9zdmc+');
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Content Styles */
+        main {
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         header {
-            padding: 4rem 2rem 2rem;
             text-align: center;
+            margin-bottom: 5rem;
+            position: relative;
         }
 
         h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff, #94a3b8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
         }
 
         .subtitle {
+            font-size: 1.25rem;
             color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-
-        main {
-            flex: 1;
-            max-width: 1200px;
+            max-width: 600px;
             margin: 0 auto;
-            padding: 2rem;
-            width: 100%;
+            font-weight: 300;
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            width: 100%;
+            perspective: 1000px;
         }
 
         .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: var(--transition);
+            position: relative;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 2.5rem;
             text-decoration: none;
-            color: inherit;
+            color: var(--text-primary);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: transform 0.1s ease, box-shadow 0.3s ease, border-color 0.3s ease;
             display: flex;
             flex-direction: column;
-            border: 1px solid rgba(0,0,0,0.05);
-            position: relative;
             overflow: hidden;
+            transform-style: preserve-3d;
+            height: 100%;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.06), transparent 40%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .card:hover::before {
+            opacity: 1;
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border-color: rgba(37, 99, 235, 0.1);
+            border-color: var(--glass-highlight);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+            transform: translateZ(20px); /* 3D effect for content */
         }
 
         .card-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: #eff6ff;
-            color: var(--primary-color);
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         }
 
         .card-title {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 700;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .card-desc {
             color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
-            flex: 1;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
         }
 
-        .card-action {
-            display: flex;
+        .card-arrow {
+            display: inline-flex;
             align-items: center;
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 0.9rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-top: auto;
+            opacity: 0.8;
+            transition: opacity 0.3s, transform 0.3s;
         }
 
-        .card-action svg {
-            width: 16px;
-            height: 16px;
+        .card:hover .card-arrow {
+            opacity: 1;
+            transform: translateX(5px);
+        }
+
+        .card-arrow svg {
+            width: 20px;
+            height: 20px;
             margin-left: 0.5rem;
-            transition: transform 0.2s;
         }
 
-        .card:hover .card-action svg {
-            transform: translateX(4px);
-        }
-
-        /* Add New Card Style */
+        /* Special style for "Add New" */
         .card.add-new {
+            border-style: dashed;
             background: transparent;
-            border: 2px dashed #cbd5e1;
-            box-shadow: none;
             align-items: center;
             justify-content: center;
             text-align: center;
-            cursor: pointer;
-            opacity: 0.7;
+            opacity: 0.5;
+            cursor: default;
         }
-
+        
         .card.add-new:hover {
-            border-color: var(--primary-color);
-            opacity: 1;
-            transform: translateY(-2px);
+             opacity: 0.8;
+             border-color: var(--text-secondary);
+             transform: none !important; /* Disable tilt for add new */
+             box-shadow: none;
         }
 
-        .add-icon {
-            font-size: 2rem;
-            color: #94a3b8;
-            margin-bottom: 0.5rem;
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem;
-            color: #94a3b8;
-            font-size: 0.875rem;
-        }
-
-        @media (max-width: 640px) {
-            header {
-                padding: 3rem 1.5rem 1.5rem;
-            }
-            
-            h1 {
-                font-size: 2rem;
-            }
-            
-            .grid {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .orb { opacity: 0.4; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>WisePlus Tools</h1>
-        <p class="subtitle">提升效率的实用小工具集合</p>
-    </header>
+
+    <!-- Background Elements -->
+    <div class="ambient-light">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
+    <div class="noise-overlay"></div>
 
     <main>
-        <div class="grid">
-            <!-- Seedance Shortcuts Tool -->
-            <a href="#" class="card" onclick="alert('这里链接到你的 Seedance 视频生成工具')">
-                <div class="card-icon">🎬</div>
-                <h2 class="card-title">Seedance 视频生成</h2>
-                <p class="card-desc">使用 Seedance 模型批量生成视频的 Shortcuts 工具，自动化你的创作流程。</p>
-                <div class="card-action">
-                    立即使用
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
+        <header>
+            <h1>WisePlus<br><span style="font-weight: 300; opacity: 0.8;">Creative Lab</span></h1>
+            <p class="subtitle">Next-gen tools for creators. Automate video generation and optimize assets for AppStore.</p>
+        </header>
+
+        <div class="grid" id="card-grid">
+            <!-- Seedance Tool -->
+            <a href="#" class="card tilt-card" onclick="alert('Launch Seedance Tool')">
+                <div class="card-content">
+                    <div class="card-icon">🎬</div>
+                    <h2 class="card-title">Seedance Automation</h2>
+                    <p class="card-desc">Batch video generation powered by AI models. Streamline your content creation workflow with intelligent shortcuts.</p>
+                    <div class="card-arrow">
+                        Launch App
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </div>
                 </div>
             </a>
 
-            <!-- AppStore Image Resizer Tool -->
-            <a href="#" class="card" onclick="alert('这里链接到你的 AppStore 图片裁剪工具')">
-                <div class="card-icon">📱</div>
-                <h2 class="card-title">AppStore 截图导出</h2>
-                <p class="card-desc">上传图片自动裁剪并导出为符合 iOS AppStore 提交规范的各种尺寸。</p>
-                <div class="card-action">
-                    立即使用
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
+            <!-- AppStore Tool -->
+            <a href="#" class="card tilt-card" onclick="alert('Launch AppStore Resizer')">
+                <div class="card-content">
+                    <div class="card-icon">�</div>
+                    <h2 class="card-title">AppStore Resizer</h2>
+                    <p class="card-desc">Smart image processing for iOS submissions. Upload once, export all required dimensions instantly.</p>
+                    <div class="card-arrow">
+                        Launch App
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </div>
                 </div>
             </a>
 
-            <!-- Placeholder for Future Tools -->
-            <div class="card add-new" onclick="alert('期待更多工具加入！')">
-                <div class="add-icon">+</div>
-                <h3>更多工具开发中...</h3>
+            <!-- Coming Soon -->
+            <div class="card add-new">
+                <div class="card-content">
+                    <div style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;">+</div>
+                    <h3 style="font-size: 1.2rem; font-weight: 500;">More Coming Soon</h3>
+                </div>
             </div>
         </div>
     </main>
 
-    <footer>
-        <p>&copy; 2024 WisePlus. All rights reserved.</p>
-    </footer>
+    <script>
+        // 3D Tilt Effect
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Update mouse position for gradient effect
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+
+                // Calculate tilt rotation
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                const rotateX = ((y - centerY) / centerY) * -5; // Max 5deg rotation
+                const rotateY = ((x - centerX) / centerX) * 5;
+
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                card.style.removeProperty('--mouse-x');
+                card.style.removeProperty('--mouse-y');
+            });
+        });
+    </script>
 </body>
 </html>
