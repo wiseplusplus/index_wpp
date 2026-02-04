@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WisePlus 工具箱</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #64748b;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            padding: 4rem 2rem 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: var(--transition);
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(37, 99, 235, 0.1);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #eff6ff;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .card-action {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        .card-action svg {
+            width: 16px;
+            height: 16px;
+            margin-left: 0.5rem;
+            transition: transform 0.2s;
+        }
+
+        .card:hover .card-action svg {
+            transform: translateX(4px);
+        }
+
+        /* Add New Card Style */
+        .card.add-new {
+            background: transparent;
+            border: 2px dashed #cbd5e1;
+            box-shadow: none;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .card.add-new:hover {
+            border-color: var(--primary-color);
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        .add-icon {
+            font-size: 2rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 3rem 1.5rem 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>WisePlus Tools</h1>
+        <p class="subtitle">提升效率的实用小工具集合</p>
+    </header>
+
+    <main>
+        <div class="grid">
+            <!-- Seedance Shortcuts Tool -->
+            <a href="#" class="card" onclick="alert('这里链接到你的 Seedance 视频生成工具')">
+                <div class="card-icon">🎬</div>
+                <h2 class="card-title">Seedance 视频生成</h2>
+                <p class="card-desc">使用 Seedance 模型批量生成视频的 Shortcuts 工具，自动化你的创作流程。</p>
+                <div class="card-action">
+                    立即使用
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </div>
+            </a>
+
+            <!-- AppStore Image Resizer Tool -->
+            <a href="#" class="card" onclick="alert('这里链接到你的 AppStore 图片裁剪工具')">
+                <div class="card-icon">📱</div>
+                <h2 class="card-title">AppStore 截图导出</h2>
+                <p class="card-desc">上传图片自动裁剪并导出为符合 iOS AppStore 提交规范的各种尺寸。</p>
+                <div class="card-action">
+                    立即使用
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </div>
+            </a>
+
+            <!-- Placeholder for Future Tools -->
+            <div class="card add-new" onclick="alert('期待更多工具加入！')">
+                <div class="add-icon">+</div>
+                <h3>更多工具开发中...</h3>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 WisePlus. All rights reserved.</p>
+    </footer>
+</body>
+</html>
