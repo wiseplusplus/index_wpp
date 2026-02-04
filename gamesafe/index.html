@@ -83,12 +83,13 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #000;
+            /* Lighter background for better contrast */
+            background-color: #404040;
             background-image: 
-                linear-gradient(45deg, #111 25%, transparent 25%), 
-                linear-gradient(-45deg, #111 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #111 75%), 
-                linear-gradient(-45deg, transparent 75%, #111 75%);
+                linear-gradient(45deg, #505050 25%, transparent 25%), 
+                linear-gradient(-45deg, #505050 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #505050 75%), 
+                linear-gradient(-45deg, transparent 75%, #505050 75%);
             background-size: 20px 20px;
             background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
             padding: 2rem;
@@ -96,7 +97,9 @@
         }
 
         canvas {
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            /* Add border to separate from background */
+            border: 1px solid rgba(255, 255, 255, 0.2);
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
@@ -249,12 +252,12 @@
                 <label>画布尺寸</label>
                 <select id="sizePreset">
                     <optgroup label="手机竖屏 (Portrait)">
-                        <option value="1080x1920">1080 x 1920 (FHD)</option>
+                        <option value="1080x1920" selected>1080 x 1920 (FHD)</option>
                         <option value="1242x2688">1242 x 2688 (iPhone XS Max)</option>
                         <option value="750x1334">750 x 1334 (iPhone 8)</option>
                     </optgroup>
                     <optgroup label="手机横屏 (Landscape)">
-                        <option value="1920x1080" selected>1920 x 1080 (FHD)</option>
+                        <option value="1920x1080">1920 x 1080 (FHD)</option>
                         <option value="2688x1242">2688 x 1242 (iPhone XS Max)</option>
                         <option value="1334x750">1334 x 750 (iPhone 8)</option>
                     </optgroup>
@@ -290,6 +293,10 @@
                         <option value="grad-cyber">渐变 - 赛博 (Cyber Punk)</option>
                         <option value="grad-morning">渐变 - 清晨 (Morning Mist)</option>
                         <option value="grad-aurora">渐变 - 极光 (Aurora)</option>
+                        <option value="grad-vermilion">渐变 - 丹红 (Ancient Vermilion)</option>
+                        <option value="grad-ink-light">渐变 - 水墨白 (Ink Wash Light)</option>
+                        <option value="grad-ink-dark">渐变 - 水墨黑 (Ink Wash Dark)</option>
+                        <option value="grad-landscape">渐变 - 青绿山水 (Blue-Green Landscape)</option>
                     </optgroup>
                 </select>
                 <div id="bgColorPickerContainer" style="display: none; margin-top: 0.5rem;">
@@ -310,7 +317,7 @@
                         <option value="'Microsoft YaHei', 'Heiti SC', sans-serif">黑体 (标准硬朗)</option>
                         <option value="'Songti SC', 'SimSun', 'Noto Serif SC', serif">宋体 (传统印刷)</option>
                         <!-- 修复楷体：添加更多兼容名称 -->
-                        <option value="'Kaiti SC', 'STKaiti', 'KaiTi', 'KaiTi_GB2312', '楷体', serif">楷体 (传统书法)</option>
+                        <option value="'Kaiti SC', 'STKaiti', 'KaiTi', 'KaiTi_GB2312', '楷体', serif" selected>楷体 (传统书法)</option>
                     </optgroup>
                     <optgroup label="在线柔软字体 (需联网)">
                         <option value="'ZCOOL XiaoWei', serif">站酷小薇体 (柔软手写)</option>
@@ -379,16 +386,16 @@
         
         // State
         const state = {
-            width: 1920,
-            height: 1080,
+            width: 1080,
+            height: 1920,
             bgStyle: 'black', // black, white, color, grad-*
             customBgColor: '#000000',
             textColor: '#ffffff',
-            fontFamily: "'Microsoft YaHei', 'Heiti SC', sans-serif",
+            fontFamily: "'Kaiti SC', 'STKaiti', 'KaiTi', 'KaiTi_GB2312', '楷体', serif",
             warningPos: 'center', // top/center/bottom or left/center/right
             showTitle: false,
             gameTitle: '游戏标题',
-            titlePos: 'center'
+            titlePos: 'top'
         };
 
         const WARNING_TEXT = [
@@ -565,7 +572,7 @@
             const padding = Math.min(w, h) * 0.05; // 5% padding
             
             // Font sizes
-            const baseFontSize = Math.min(w, h) * 0.05; // Responsive font size
+            const baseFontSize = Math.min(w, h) * 0.055; // Responsive font size
             const titleFontSize = baseFontSize * 2.5;
             const warningFontSize = baseFontSize;
             const lineHeight = 1.6;
@@ -695,6 +702,23 @@
                     case 'grad-aurora':
                         grd.addColorStop(0, "#134e5e");
                         grd.addColorStop(1, "#71b280");
+                        break;
+                    case 'grad-vermilion':
+                        grd.addColorStop(0, "#700000"); // Deep Dark Red
+                        grd.addColorStop(1, "#D00000"); // Rich Red
+                        break;
+                    case 'grad-ink-light':
+                        grd.addColorStop(0, "#E6E9F0"); // Light Grey
+                        grd.addColorStop(1, "#eef1f5"); // White-ish
+                        break;
+                    case 'grad-ink-dark':
+                        grd.addColorStop(0, "#232526"); // Dark Grey
+                        grd.addColorStop(1, "#414345"); // Medium Grey
+                        break;
+                    case 'grad-landscape':
+                        grd.addColorStop(0, "#2C5364"); // Dark Blue
+                        grd.addColorStop(0.5, "#203A43");
+                        grd.addColorStop(1, "#0F2027"); // Deep Green/Black
                         break;
                 }
                 ctx.fillStyle = grd;
